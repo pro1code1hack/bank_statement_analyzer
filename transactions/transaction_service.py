@@ -37,6 +37,39 @@ class TransactionService:
         """
         self.db = db
 
+    def get_transactions_by_account(self, account_id: int) -> dict:
+        """
+        Retrieve transactions by account ID and group them by category.
+
+        Args:
+            account_id (int): The ID of the account to retrieve transactions for.
+
+        Returns:
+            dict: A dictionary with categories as keys and lists of transactions as values.
+        """
+        cursor = self.db.connection.cursor()
+        cursor.execute("""
+            SELECT * FROM transactions WHERE account_id = ?
+        """, (account_id,))
+        rows = cursor.fetchall()
+        cursor.close()
+
+        transactions_by_category = {}
+        for row in rows:
+            category = row["description"]
+
+            if category not in transactions_by_category:
+                transactions_by_category[category] = []
+
+            transactions_by_category[category].append({
+                "date": row["transaction_date"],
+                "description": row["description"],
+                "money_in": row["money_in"],
+                "money_out": row["money_out"],
+                "balance": row["balance"]
+            })
+        return transactions_by_category
+
     def add_transaction(self, account_id: int, date: str, description: str, money_in: float, money_out: float,
                         balance: float, category_id: int = 1) -> None:
         """
@@ -51,10 +84,10 @@ class TransactionService:
             balance (float): The balance after the transaction.
             category_id (int, optional): The category ID of the transaction. Defaults to 1.
         """
-        cursor = self.db.cursor()
+        cursor = self.db.connection.cursor()
         cursor.execute("""
             INSERT INTO transactions (account_id, transaction_date, description, money_out, money_in, balance, category_id)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (account_id, date, description, money_out, money_in, balance, category_id))
-        self.db.commit()
+        self.db.connection.commit()
         cursor.close()
