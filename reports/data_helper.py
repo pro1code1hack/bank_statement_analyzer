@@ -1,7 +1,20 @@
+from typing import Dict, List
+
 import pandas as pd
 
+from transactions.transaction_service import Transaction
 
-def prepare_expense_data(transactions_by_category):
+
+def prepare_expense_data(transactions_by_category: Dict[str, List[Transaction]]) -> pd.DataFrame:
+    """
+    Prepare a DataFrame for expense data.
+
+    Args: transactions_by_category (Dict[str, List[Transaction]]): Dictionary where the key is the category and the
+    value is a list of transactions.
+
+    Returns:
+        pd.DataFrame: DataFrame containing sorted expense data.
+    """
     expense_data = []
     for category, transactions in transactions_by_category.items():
         for transaction in transactions:
@@ -16,7 +29,16 @@ def prepare_expense_data(transactions_by_category):
     return expense_df
 
 
-def prepare_income_data(transactions_by_category):
+def prepare_income_data(transactions_by_category: Dict[str, List[Transaction]]) -> pd.DataFrame:
+    """
+    Prepare a DataFrame for income data.
+
+    Args: transactions_by_category (Dict[str, List[Transaction]]): Dictionary where the key is the category and the
+    value is a list of transactions.
+
+    Returns:
+        pd.DataFrame: DataFrame containing sorted income data.
+    """
     income_data = []
     for category, transactions in transactions_by_category.items():
         for transaction in transactions:

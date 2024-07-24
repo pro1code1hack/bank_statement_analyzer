@@ -1,32 +1,28 @@
-import os
+from typing import Dict, List
 
-from reports.data_helper import prepare_expense_data, prepare_income_data
+from transactions.transaction_service import Transaction
+from .data_helper import prepare_expense_data, prepare_income_data
+from .serialisation import BankOfScotlandSerialiser
 
 
 class ReportService:
-
-    def __init__(self, db):
-        self.db = db
+    """
+    Service class for handling report generation and export.
+    """
 
     @staticmethod
-    def generate_report(transactions, output_dir="../static/reports/bank_of_scotland", export_format="csv"):
-        expense_df = prepare_expense_data(transactions)
-        income_df = prepare_income_data(transactions)
+    def generate_report(transactions_by_category: Dict[str, List['Transaction']],
+                        output_dir: str = "../static/reports/bank_of_scotland",
+                        export_format: str = "csv") -> None:
+        """
+        Generate a report from the categorized transactions.
 
-        if export_format in ["csv", "json"]:
-            os.makedirs(output_dir, exist_ok=True)
+        Args:
+            transactions_by_category (Dict[str, List['Transaction']]): Dictionary of categorized transactions.
+            output_dir (str, optional): Directory to save the report. Defaults to "../static/reports/bank_of_scotland".
+            export_format (str, optional): Format to export the report. Defaults to "csv".
+        """
+        expense_df = prepare_expense_data(transactions_by_category)
+        income_df = prepare_income_data(transactions_by_category)
 
-        if export_format == "csv":
-            expense_csv_path = os.path.join(output_dir, "expenses.csv")
-            income_csv_path = os.path.join(output_dir, "incomes.csv")
-            expense_df.to_csv(expense_csv_path, index=False)
-            income_df.to_csv(income_csv_path, index=False)
-            print(f"Expenses and incomes exported to {output_dir} as CSV files.")
-            return
-
-        if export_format == "json":
-            expense_json_path = os.path.join(output_dir, "expenses.json")
-            income_json_path = os.path.join(output_dir, "incomes.json")
-            expense_df.to_json(expense_json_path, orient="records", date_format="iso")
-            income_df.to_json(income_json_path, orient="records", date_format="iso")
-            print(f"Expenses and incomes exported to {output_dir} as JSON files.")
+        BankOfScotlandSerialiser.serialise(expense_df, income_df, output_dir, export_format)

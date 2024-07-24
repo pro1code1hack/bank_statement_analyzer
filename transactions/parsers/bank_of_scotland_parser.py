@@ -1,16 +1,36 @@
 from datetime import datetime
+from typing import List, Dict
 
 from PyPDF2 import PdfReader
 
 from transactions.parsers.base_parser import BaseParser
+from transactions.transaction_service import Transaction
 
 
 class BankOfScotlandParser(BaseParser):
-    def __init__(self):
-        self.transactions = []
-        self.current_transaction = {}
+    """
+    Parser for Bank of Scotland bank statements.
 
-    def parse(self, file_path):
+    This parser extracts transaction data from Bank of Scotland PDF statements.
+    """
+
+    def __init__(self) -> None:
+        """
+        Initialize the BankOfScotlandParser.
+        """
+        self.transactions: List[Transaction] = []
+        self.current_transaction: Dict[str, str] = {}
+
+    def parse(self, file_path: str) -> List[Transaction]:
+        """
+        Parse the bank statement file.
+
+        Args:
+            file_path (str): The path to the bank statement file to be parsed.
+
+        Returns:
+            List[Transaction]: A list of transactions extracted from the bank statement.
+        """
         reader = PdfReader(file_path)
         num_pages = len(reader.pages)
 
@@ -31,7 +51,13 @@ class BankOfScotlandParser(BaseParser):
 
         return self.transactions
 
-    def process_line(self, line):
+    def process_line(self, line: str) -> None:
+        """
+        Process a line from the bank statement.
+
+        Args:
+            line (str): A line of text from the bank statement.
+        """
         if 'Date' in line:
             self.reset_current_transaction()
             return
@@ -60,7 +86,10 @@ class BankOfScotlandParser(BaseParser):
             self.current_transaction['balance'] = self.extract_money_value(line)
             self.add_transaction()
 
-    def reset_current_transaction(self):
+    def reset_current_transaction(self) -> None:
+        """
+        Reset the current transaction dictionary.
+        """
         self.current_transaction = {
             'date': None,
             'description': None,
@@ -71,26 +100,56 @@ class BankOfScotlandParser(BaseParser):
         }
 
     @staticmethod
-    def extract_value(line):
+    def extract_value(line: str) -> str:
+        """
+        Extract a value from a line of text.
+
+        Args:
+            line (str): A line of text.
+
+        Returns:
+            str: The extracted value.
+        """
         return line.split('.')[0].strip()
 
     @staticmethod
-    def extract_money_value(line):
+    def extract_money_value(line: str) -> str:
+        """
+        Extract a money value from a line of text.
+
+        Args:
+            line (str): A line of text.
+
+        Returns:
+            str: The extracted money value.
+        """
         parts = line.split('.')
         if parts[0].strip() == 'blank':
             return '0.0'
         return parts[0].strip() + '.' + parts[1].strip()
 
     @staticmethod
-    def format_date(date_str):
+    def format_date(date_str: str) -> str:
+        """
+        Format a date string to YYYY-MM-DD format.
+
+        Args:
+            date_str (str): The date string to format.
+
+        Returns:
+            str: The formatted date string.
+        """
         try:
             date_obj = datetime.strptime(date_str, "%d %b %y")
             return date_obj.strftime("%Y-%m-%d")
         except ValueError:
             return date_str
 
-    def add_transaction(self):
-        transaction = {
+    def add_transaction(self) -> None:
+        """
+        Add the current transaction to the list of transactions.
+        """
+        transaction: Transaction = {
             "date": self.current_transaction['date'],
             "description": self.current_transaction['description'],
             "type": self.current_transaction['type'],
