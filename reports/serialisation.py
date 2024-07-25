@@ -14,9 +14,9 @@ class BaseSerialiser:
         """
         Serialise a DataFrame to CSV format.
 
-        Args:
-            df (pd.DataFrame): DataFrame to serialise.
-            output_path (str): Path to save the CSV file.
+        :param:
+            df: DataFrame to serialise.
+            output_path: Path to save the CSV file.
         """
         df.to_csv(output_path, index=False)
         print(f"Data exported to {output_path} as CSV file.")
@@ -26,9 +26,9 @@ class BaseSerialiser:
         """
         Serialise a DataFrame to JSON format.
 
-        Args:
-            df (pd.DataFrame): DataFrame to serialise.
-            output_path (str): Path to save the JSON file.
+        :param:
+            df: DataFrame to serialise.
+            output_path: Path to save the JSON file.
         """
         df.to_json(output_path, orient="records", date_format="iso")
         print(f"Data exported to {output_path} as JSON file.")
@@ -44,11 +44,11 @@ class BankOfScotlandSerialiser(BaseSerialiser):
         """
         Serialise data based on the specified format.
 
-        Args:
-            expense_df (pd.DataFrame): DataFrame containing expense data.
-            income_df (pd.DataFrame): DataFrame containing income data.
-            output_dir (str): Directory to save the serialised files.
-            export_format (str): Format to export the data ('csv' or 'json').
+        :param:
+            expense_df: DataFrame containing expense data.
+            income_df: DataFrame containing income data.
+            output_dir: Directory to save the serialised files.
+            export_format: Format to export the data ('csv' or 'json').
         """
         os.makedirs(output_dir, exist_ok=True)
 

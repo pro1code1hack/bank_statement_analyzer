@@ -17,10 +17,11 @@ class ReportService:
         """
         Generate a report from the categorized transactions.
 
-        Args:
-            transactions_by_category (Dict[str, List['Transaction']]): Dictionary of categorized transactions.
-            output_dir (str, optional): Directory to save the report. Defaults to "../static/reports/bank_of_scotland".
-            export_format (str, optional): Format to export the report. Defaults to "csv".
+        :param:
+            transactions_by_category: Dictionary of categorized transactions.
+            output_dir: Directory to save the report. Defaults to "../static/reports/bank_of_scotland".
+            export_format: Format to export the report.
+            Defaults to "csv".
         """
         expense_df = prepare_expense_data(transactions_by_category)
         income_df = prepare_income_data(transactions_by_category)

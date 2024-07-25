@@ -7,13 +7,13 @@ class Transaction(TypedDict):
     """
     A TypedDict for representing a transaction.
 
-    Attributes:
-        date (str): The date of the transaction in YYYY-MM-DD format.
-        description (str): A brief description of the transaction.
-        money_in (float): The amount of money credited in the transaction.
-        money_out (float): The amount of money debited in the transaction.
-        balance (float): The account balance after the transaction.
-        type (str): The type of transaction (e.g., 'DEBIT', 'CREDIT').
+    :param:
+        date: The date of the transaction in YYYY-MM-DD format.
+        description: A brief description of the transaction.
+        money_in: The amount of money credited in the transaction.
+        money_out: The amount of money debited in the transaction.
+        balance: The account balance after the transaction.
+        type: The type of transaction (e.g., 'DEBIT', 'CREDIT').
     """
     date: str
     description: str
@@ -32,8 +32,7 @@ class TransactionService:
         """
         Initialize the TransactionService with a database connection.
 
-        Args:
-            db (sqlite3.Connection): Database connection object.
+        :param: db: Database connection object.
         """
         self.db = db
 
@@ -41,11 +40,8 @@ class TransactionService:
         """
         Retrieve transactions by account ID and group them by category.
 
-        Args:
-            account_id (int): The ID of the account to retrieve transactions for.
-
-        Returns:
-            dict: A dictionary with categories as keys and lists of transactions as values.
+        :param: account_id: The ID of the account to retrieve transactions for.
+        :returns: dict: A dictionary with categories as keys and lists of transactions as values.
         """
         cursor = self.db.connection.cursor()
         cursor.execute("""
@@ -68,6 +64,7 @@ class TransactionService:
                 "money_out": row["money_out"],
                 "balance": row["balance"]
             })
+
         return transactions_by_category
 
     def add_transaction(self, account_id: int, date: str, description: str, money_in: float, money_out: float,
@@ -75,14 +72,14 @@ class TransactionService:
         """
         Add a transaction to the database.
 
-        Args:
-            account_id (int): The account ID associated with the transaction.
-            date (str): The date of the transaction.
-            description (str): The description of the transaction.
-            money_in (float): The amount of money in for the transaction.
-            money_out (float): The amount of money out for the transaction.
-            balance (float): The balance after the transaction.
-            category_id (int, optional): The category ID of the transaction. Defaults to 1.
+        :param:
+            account_id: The account ID associated with the transaction.
+            date: The date of the transaction.
+            description: The description of the transaction.
+            money_in: The amount of money in for the transaction.
+            money_out: The amount of money out for the transaction.
+            balance: The balance after the transaction.
+            category_id: The category ID of the transaction. Default to 1.
         """
         cursor = self.db.connection.cursor()
         cursor.execute("""

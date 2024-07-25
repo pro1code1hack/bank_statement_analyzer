@@ -25,11 +25,8 @@ class BankOfScotlandParser(BaseParser):
         """
         Parse the bank statement file.
 
-        Args:
-            file_path (str): The path to the bank statement file to be parsed.
-
-        Returns:
-            List[Transaction]: A list of transactions extracted from the bank statement.
+        :param: file_path: The path to the bank statement file to be parsed.
+        :returns: List[Transaction]: A list of transactions extracted from the bank statement.
         """
         reader = PdfReader(file_path)
         num_pages = len(reader.pages)
@@ -55,8 +52,7 @@ class BankOfScotlandParser(BaseParser):
         """
         Process a line from the bank statement.
 
-        Args:
-            line (str): A line of text from the bank statement.
+        :param: line: A line of text from the bank statement.
         """
         if 'Date' in line:
             self.reset_current_transaction()
@@ -104,11 +100,8 @@ class BankOfScotlandParser(BaseParser):
         """
         Extract a value from a line of text.
 
-        Args:
-            line (str): A line of text.
-
-        Returns:
-            str: The extracted value.
+        :param: line: A line of text.
+        :returns: str: The extracted value.
         """
         return line.split('.')[0].strip()
 
@@ -117,11 +110,8 @@ class BankOfScotlandParser(BaseParser):
         """
         Extract a money value from a line of text.
 
-        Args:
-            line (str): A line of text.
-
-        Returns:
-            str: The extracted money value.
+        :param: line: A line of text.
+        :returns: str: The extracted money value.
         """
         parts = line.split('.')
         if parts[0].strip() == 'blank':
@@ -133,11 +123,8 @@ class BankOfScotlandParser(BaseParser):
         """
         Format a date string to YYYY-MM-DD format.
 
-        Args:
-            date_str (str): The date string to format.
-
-        Returns:
-            str: The formatted date string.
+        :param: date_str: The date string to format.
+        :returns: str: The formatted date string.
         """
         try:
             date_obj = datetime.strptime(date_str, "%d %b %y")

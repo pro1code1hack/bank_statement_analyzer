@@ -16,13 +16,8 @@ class BaseParser:
 
         This method should be implemented by subclasses to extract transaction data from the specified file.
 
-        Args:
-            file_path (str): The path to the bank statement file to be parsed.
-
-        Returns:
-            List[Transaction]: A list of dictionaries, each containing transaction data.
-
-        Raises:
-            NotImplementedError: If the method is not implemented by the subclass.
+        :param: file_path: The path to the bank statement file to be parsed.
+        :returns: List[Transaction]: A list of dictionaries, each containing transaction data.
+        :raise: NotImplementedError: If the method is not implemented by the subclass.
         """
         raise NotImplementedError("Subclasses should implement this method")

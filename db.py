@@ -10,7 +10,7 @@ class Database:
     def connect(self) -> sqlite3.Connection:
         try:
             conn = sqlite3.connect(self.db_file)
-            conn.row_factory = sqlite3.Row  # Set the row factory to sqlite3.Row
+            conn.row_factory = sqlite3.Row
             return conn
         except Error as e:
             print(e)
