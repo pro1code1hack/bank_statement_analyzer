@@ -1,20 +1,22 @@
 import sqlite3
 from sqlite3 import Error
 
+
 class Database:
-    def __init__(self, db_file):
+    def __init__(self, db_file: str) -> None:
         self.db_file = db_file
         self.connection = self.connect()
 
-    def connect(self):
+    def connect(self) -> sqlite3.Connection:
         try:
             conn = sqlite3.connect(self.db_file)
+            conn.row_factory = sqlite3.Row
             return conn
         except Error as e:
             print(e)
         return None
 
-    def create_tables(self):
+    def create_tables(self) -> None:
         tables = [
             """
             CREATE TABLE IF NOT EXISTS users (
