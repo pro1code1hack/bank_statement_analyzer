@@ -13,28 +13,13 @@ class Database:
             conn.row_factory = sqlite3.Row
             return conn
         except Error as e:
-            print(e)
+            raise e
         return None
 
     def create_tables(self) -> None:
         tables = [
             """
-            DROP TABLE IF EXISTS users;
-            """,
-            """
-            DROP TABLE IF EXISTS accounts;
-            """,
-            """
-            DROP TABLE IF EXISTS statements;
-            """,
-            """
-            DROP TABLE IF EXISTS categories;
-            """,
-            """
-            DROP TABLE IF EXISTS transactions;
-            """,
-            """
-            CREATE TABLE users (
+            CREATE TABLE IF NOT EXISTS users (
                 user_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 email TEXT NOT NULL UNIQUE,
@@ -44,7 +29,7 @@ class Database:
             );
             """,
             """
-            CREATE TABLE accounts (
+            CREATE TABLE IF NOT EXISTS accounts (
                 account_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER,
                 account_number TEXT NOT NULL,
@@ -58,7 +43,7 @@ class Database:
             );
             """,
             """
-            CREATE TABLE statements (
+            CREATE TABLE IF NOT EXISTS statements (
                 statement_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 account_id INTEGER,
                 start_date TEXT NOT NULL,
@@ -72,14 +57,14 @@ class Database:
             );
             """,
             """
-            CREATE TABLE categories (
+            CREATE TABLE IF NOT EXISTS categories (
                 category_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 description TEXT
             );
             """,
             """
-            CREATE TABLE transactions (
+            CREATE TABLE IF NOT EXISTS transactions (
                 transaction_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 account_id INTEGER,
                 transaction_date TEXT NOT NULL,
@@ -109,7 +94,7 @@ class Database:
             cursor.executemany(insert_sql, [(user['name'], user['email'], user['password']) for user in users])
             self.connection.commit()
         except Error as e:
-            print(e)
+            raise e
         finally:
             cursor.close()
     
@@ -122,7 +107,7 @@ class Database:
             cursor.executemany(insert_sql, [(account['user_id'], account['account_number'], account['iban'], account['bic'], account['sort_code'], account['balance']) for account in accounts])
             self.connection.commit()
         except Error as e:
-            print(e)
+            raise e
         finally:
             cursor.close()
     
@@ -135,7 +120,7 @@ class Database:
             cursor.executemany(insert_sql, [(statement['account_id'], statement['start_date'], statement['end_date'], statement['opening_balance'], statement['closing_balance'], statement['money_out'], statement['money_in']) for statement in statements])
             self.connection.commit()
         except Error as e:
-            print(e)
+            raise e
         finally:
             cursor.close()
 
@@ -148,7 +133,7 @@ class Database:
             cursor.executemany(insert_sql, [(category['name'], category['description']) for category in categories])
             self.connection.commit()
         except Error as e:
-            print(e)
+            raise e
         finally:
             cursor.close()
 
@@ -161,6 +146,6 @@ class Database:
             cursor.executemany(insert_sql, [(transaction['account_id'], transaction['date'], transaction['description'], transaction['money_out'], transaction['money_in'], transaction['balance'], transaction['category_id']) for transaction in transactions])
             self.connection.commit()
         except Error as e:
-            print(e)
+            raise e
         finally:
             cursor.close()

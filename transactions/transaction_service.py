@@ -70,7 +70,7 @@ class TransactionService:
             rows = cursor.fetchall()
             return rows
         except Error as e:
-            print(e)
+            raise e
         finally:
             cursor.close()
     
