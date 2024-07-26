@@ -13,7 +13,7 @@ class Database:
             conn.row_factory = sqlite3.Row
             return conn
         except Error as e:
-            print(e)
+            raise e
         return None
 
     def create_tables(self) -> None:
@@ -57,6 +57,13 @@ class Database:
             );
             """,
             """
+            CREATE TABLE IF NOT EXISTS categories (
+                category_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                description TEXT
+            );
+            """,
+            """
             CREATE TABLE IF NOT EXISTS transactions (
                 transaction_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 account_id INTEGER,
@@ -70,13 +77,6 @@ class Database:
                 FOREIGN KEY (account_id) REFERENCES accounts (account_id),
                 FOREIGN KEY (category_id) REFERENCES categories (category_id)
             );
-            """,
-            """
-            CREATE TABLE IF NOT EXISTS categories (
-                category_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                description TEXT
-            );
             """
         ]
         cursor = self.connection.cursor()
@@ -84,3 +84,68 @@ class Database:
             cursor.execute(table)
         self.connection.commit()
         cursor.close()
+
+    def insert_users(self, users):
+        insert_sql = """
+            INSERT INTO users (name, email, password) VALUES (?, ?, ?);
+        """
+        try:
+            cursor = self.connection.cursor()
+            cursor.executemany(insert_sql, [(user['name'], user['email'], user['password']) for user in users])
+            self.connection.commit()
+        except Error as e:
+            raise e
+        finally:
+            cursor.close()
+    
+    def insert_accounts(self, accounts):
+        insert_sql = """
+            INSERT INTO accounts (user_id, account_number, iban, bic, sort_code, balance) VALUES (?, ?, ?, ?, ?, ?);
+        """
+        try:
+            cursor = self.connection.cursor()
+            cursor.executemany(insert_sql, [(account['user_id'], account['account_number'], account['iban'], account['bic'], account['sort_code'], account['balance']) for account in accounts])
+            self.connection.commit()
+        except Error as e:
+            raise e
+        finally:
+            cursor.close()
+    
+    def insert_statements(self, statements):
+        insert_sql = """
+            INSERT INTO statements(account_id, start_date, end_date, opening_balance, closing_balance, money_out, money_in) VALUES (?, ?, ?, ?, ?, ?, ?);
+        """
+        try:
+            cursor = self.connection.cursor()
+            cursor.executemany(insert_sql, [(statement['account_id'], statement['start_date'], statement['end_date'], statement['opening_balance'], statement['closing_balance'], statement['money_out'], statement['money_in']) for statement in statements])
+            self.connection.commit()
+        except Error as e:
+            raise e
+        finally:
+            cursor.close()
+
+    def insert_categories(self, categories):
+        insert_sql = """
+            INSERT INTO categories (name, description) VALUES (?, ?);
+        """
+        try:
+            cursor = self.connection.cursor()
+            cursor.executemany(insert_sql, [(category['name'], category['description']) for category in categories])
+            self.connection.commit()
+        except Error as e:
+            raise e
+        finally:
+            cursor.close()
+
+    def insert_transactions(self, transactions):
+        insert_sql = """
+            INSERT INTO transactions (account_id, transaction_date, description, money_out, money_in, balance, category_id) VALUES (?, ?, ?, ?, ?, ?, ?);
+        """
+        try:
+            cursor = self.connection.cursor()
+            cursor.executemany(insert_sql, [(transaction['account_id'], transaction['date'], transaction['description'], transaction['money_out'], transaction['money_in'], transaction['balance'], transaction['category_id']) for transaction in transactions])
+            self.connection.commit()
+        except Error as e:
+            raise e
+        finally:
+            cursor.close()
