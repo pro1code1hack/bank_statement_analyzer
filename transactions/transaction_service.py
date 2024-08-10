@@ -1,7 +1,7 @@
 import sqlite3
-
+from sqlite3 import Error
 from typing import TypedDict
-
+import pandas as pd
 
 class Transaction(TypedDict):
     """
@@ -35,7 +35,63 @@ class TransactionService:
         :param: db: Database connection object.
         """
         self.db = db
-
+    
+    def get_transactions_for_period(self, start_day: str, end_day:str) -> list:
+        """
+        Retrieve transactions in between 2 dates.
+        :params: 
+            start_day: The first day of the retrieved transactions.
+            end_day: The last day of the retrieved transactions.
+        :returns: 
+            list: A list of transactions.
+        """
+        insert_sql = """
+            SELECT 
+                t.transaction_id,
+                t.transaction_date,
+                t.description,
+                t.money_out,
+                t.money_in,
+                t.balance,
+                a.account_number,
+                c.name
+            FROM 
+                transactions t
+            JOIN 
+                accounts a ON t.account_id = a.account_id
+            JOIN 
+                categories c ON t.category_id = c.category_id
+            WHERE t.transaction_date 
+            BETWEEN ? AND ?;
+        """
+        try:
+            cursor = self.db.connection.cursor()
+            cursor.execute(insert_sql, [start_day, end_day])
+            rows = cursor.fetchall()
+            return rows
+        except Error as e:
+            raise e
+        finally:
+            cursor.close()
+    
+    def convert_to_pd(self, dataset: list):
+        """
+        Create a table from the list of transactions that consists of 8 columns
+        :params: dataset: A list of the retrieved transactions in a period
+        :returns: A table with rows and columns
+        """
+        df = pd.DataFrame(dataset, columns=[
+            "ID",
+            "Date",
+            "Description",
+            "Money_out",
+            "Money_in",
+            "Balance",
+            "Account number",
+            "Category name"
+        ])
+        return df
+        
     def get_transactions_by_account(self, account_id: int) -> dict:
         """
         Retrieve transactions by account ID and group them by category.
