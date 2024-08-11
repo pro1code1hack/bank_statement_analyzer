@@ -67,7 +67,7 @@ class Database:
             CREATE TABLE IF NOT EXISTS transactions (
                 transaction_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 account_id INTEGER,
-                transaction_date TEXT NOT NULL,
+                date TEXT NOT NULL,
                 description TEXT,
                 money_out REAL,
                 money_in REAL,
@@ -139,7 +139,7 @@ class Database:
 
     def insert_transactions(self, transactions):
         insert_sql = """
-            INSERT INTO transactions (account_id, transaction_date, description, money_out, money_in, balance, category_id) VALUES (?, ?, ?, ?, ?, ?, ?);
+            INSERT INTO transactions (account_id, date, description, money_out, money_in, balance, category_id) VALUES (?, ?, ?, ?, ?, ?, ?);
         """
         try:
             cursor = self.connection.cursor()
