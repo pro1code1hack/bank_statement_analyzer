@@ -31,7 +31,7 @@ def upload_bank_statement(db, file_path, account_id):
         )
 
 
-def generate_and_print_report(db, account_id, output_dir="./static/reports/bank_of_scotland"):
+def generate_and_print_report(db, account_id, output_dir="bank_of_scotland"):
     transaction_service = TransactionService(db)
     report_service = ReportService()
 
