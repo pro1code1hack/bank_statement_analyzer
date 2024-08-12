@@ -48,7 +48,7 @@ class TransactionService:
         insert_sql = """
             SELECT 
                 t.transaction_id,
-                t.transaction_date,
+                t.date,
                 t.description,
                 t.money_out,
                 t.money_in,
@@ -61,7 +61,7 @@ class TransactionService:
                 accounts a ON t.account_id = a.account_id
             JOIN 
                 categories c ON t.category_id = c.category_id
-            WHERE t.transaction_date 
+            WHERE t.date 
             BETWEEN ? AND ?;
         """
         try:
@@ -114,7 +114,7 @@ class TransactionService:
                 transactions_by_category[category] = []
 
             transactions_by_category[category].append({
-                "date": row["transaction_date"],
+                "date": row["date"],
                 "description": row["description"],
                 "money_in": row["money_in"],
                 "money_out": row["money_out"],
@@ -139,7 +139,7 @@ class TransactionService:
         """
         cursor = self.db.connection.cursor()
         cursor.execute("""
-            INSERT INTO transactions (account_id, transaction_date, description, money_out, money_in, balance, category_id)
+            INSERT INTO transactions (account_id, date, description, money_out, money_in, balance, category_id)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (account_id, date, description, money_out, money_in, balance, category_id))
         self.db.connection.commit()
