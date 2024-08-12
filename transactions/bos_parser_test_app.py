@@ -62,3 +62,11 @@ if __name__ == "__main__":
         upload_bank_statement(db, file_path, account_id)
 
         generate_and_print_report(db, account_id)
+
+def execute_upload(db, file_path, account_id):
+    if not os.path.isfile(file_path):
+        print(f"File not found: {file_path}")
+    else:
+        upload_bank_statement(db, file_path, account_id)
+
+        generate_and_print_report(db, account_id)
