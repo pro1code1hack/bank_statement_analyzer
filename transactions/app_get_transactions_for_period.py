@@ -27,3 +27,12 @@ if len(transaction) > 0:
     print(table)
 else: 
     print("No transactions found for the specified period")
+
+
+def get_transactions_execute(db, account_id):
+    transaction = get_transactions_for_period(db,account_id)
+    if len(transaction) > 0:
+        table = convert_transactions_to_table(db, transaction)
+        print(table)
+    else:
+        print("No transactions found for the specified period")

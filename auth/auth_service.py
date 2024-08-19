@@ -4,13 +4,15 @@ from db import Database
 from auth.hash_service import check_password, hash_password
 from transactions.app_get_transactions_for_period import get_transactions_execute
 from transactions.bos_parser_test_app import execute_upload
-
+from visualisation.visualisation import Visualizer
 
 class UserService:
     def __init__(self, db_path: str):
         self.db_path = db_path
         self.conn = sqlite3.connect(self.db_path)
         self.db = Database(db_path)
+        self.transactions = None
+        self.visualisation_report = Visualizer('main/directory')
 
     def display_menu(self):
         print("\nWelcome to Bank Statement Parser!")
@@ -109,4 +111,64 @@ class UserService:
         except sqlite3.Error as e:
             print(f"Error: {e}")
             return False
-        
+
+    def display_bank_menu(self, user_id):
+        print("\n--- Bank Menu ---")
+        print("Please choose an option:")
+        print("1. Create Account")
+        print("2. Upload Bank Statement")
+        print("3. View Transactions")
+        print("4. Generate Report by Grouped Transactions (by categories)")
+        print("5. Create visualization report for statement")
+        print("6. Logout")
+
+        choice = input("Select an option (1-5): ")
+        if choice == "1":
+            self.create_account(user_id)
+            pass
+        elif choice == "2":
+            account_id = self.get_account_by_userID(user_id)
+            file_path = input("Enter the path to the bank statement file: ").strip('"')
+            execute_upload(self.db, file_path, account_id)
+        elif choice == "3":
+            account_id = self.get_account_by_userID(user_id)
+            self.transactions = get_transactions_execute(self.db, account_id)
+            pass
+        elif choice == "4":
+            self.visualisation_report.visualize_income_vs_expense(self.transactions)
+        elif choice == "5":
+            print("Logging out...")
+            return False
+        else:
+            print("Invalid option. Please try again.")
+            return True
+
+    def run(self):
+        while True:
+            self.display_menu()
+            choice = input("Select an option (1-3): ")
+
+            if choice == "1":
+                print("\n--- Register ---")
+                name = input("Enter your name: ")
+                email = input("Enter your email: ")
+                password = input("Enter your password: ")
+                self.register_user(name, email, password)
+
+            elif choice == "2":
+                print("\n--- Login ---")
+                email = input("Enter your email: ")
+                password = input("Enter your password: ")
+                user_id = self.login_user(email, password)
+                if user_id:
+                    running = True
+                    while running:
+                        running = self.display_bank_menu(user_id)
+            elif choice == "3":
+                print("Exiting...")
+                self.conn.close()
+                break
+
+            else:
+                print("Invalid option. Please try again.")
+
